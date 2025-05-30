@@ -1,69 +1,43 @@
-//{ Driver Code Starts
-
-#include <bits/stdc++.h>
-using namespace std;
-
-
-// } Driver Code Ends
-// User function template for C++
 class Solution {
-  private:
-    int help(vector<vector<int>>& dp, vector<int>& a, int target, int index) {
-        // Base Case
-        if (target == 0) return 1; // If target becomes 0, subset exists
-        if (index == 0) return (a[0] == target); // Only one element to check
+private:
+    int help(vector<int>& a, vector<vector<int>>& dp, int sum, int index) {
+        if (sum == 0)
+            return 1;
+        if (index == 0)
+            return a[0] == sum;
+        if (dp[index][sum] != -1)
+            return dp[index][sum];
 
-        // Memoization check
-        if (dp[index][target] != -1) return dp[index][target];
+        int notpick = help(a, dp, sum, index - 1);
+        int pick = 0;
+        if (a[index] <= sum)
+            pick = help(a, dp, sum - a[index], index - 1);
 
-        // Exclude the current element
-        int notTake = help(dp, a, target, index - 1);
-
-        // Include the current element (if it doesn't exceed target)
-        int take = 0;
-        if (target >= a[index])
-            take = help(dp, a, target - a[index], index - 1);
-
-        return dp[index][target] = (take || notTake);
+        return dp[index][sum] = pick || notpick;
     }
 
-  public:
-    bool isSubsetSum(vector<int>& arr, int target) {
+public:
+    bool isSubsetSum(vector<int>& arr, int sum) {
+        // Bit manipulation approach (works well for n <= 20)
+        /*
         int n = arr.size();
-        vector<vector<int>> dp(n, vector<int>(target + 1, -1));
-        return help(dp, arr, target, n - 1);
+        int totalSubsets = 1 << n;
+        for (int mask = 0; mask < totalSubsets; mask++) {
+            int currSum = 0;
+            for (int j = 0; j < n; j++) {
+                if (mask & (1 << j)) {
+                    currSum += arr[j];
+                }
+            }
+            if (currSum == sum)
+                return true;
+        }
+        return false;
+        */
+
+        // Recursive DP approach (top-down)
+        int n = arr.size();
+        vector<vector<int>> dp(n, vector<int>(sum + 1, -1));
+        return help(arr, dp, sum, n - 1);
     }
 };
-
-
-//{ Driver Code Starts.
-
-int main() {
-
-    int t;
-    cin >> t;
-    cin.ignore();
-    while (t--) {
-        vector<int> arr;
-        string input;
-        getline(cin, input);
-        stringstream ss(input);
-        int number;
-        while (ss >> number) {
-            arr.push_back(number);
-        }
-        int sum;
-        cin >> sum;
-        cin.ignore();
-
-        Solution ob;
-        if (ob.isSubsetSum(arr, sum))
-            cout << "true" << endl;
-        else
-            cout << "false" << endl;
-        cout << "~" << endl;
-    }
-    return 0;
-}
-
-// } Driver Code Ends
