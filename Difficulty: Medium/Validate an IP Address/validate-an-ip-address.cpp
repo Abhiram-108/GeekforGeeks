@@ -1,70 +1,33 @@
-//{ Driver Code Starts
-#include <bits/stdc++.h>
-using namespace std;
-
-
-// } Driver Code Ends
-// User function Template for C++
 class Solution {
-  public:
-    int isValid(string s) {
-  vector<string> segments;
-    string temp;
-    stringstream ss(s);
-    
-    // Split the string by '.'
-    while (getline(ss, temp, '.')) {
-        segments.push_back(temp);
-    }
-    
-    // Check if the number of segments is 4
-    if (segments.size() != 4) {
-        return false;
-    }
-    
-    for (string segment : segments) {
-        // Check if the segment is empty or has leading zeros
-        if (segment.empty() || (segment.size() > 1 && segment[0] == '0')) {
-            return false;
+public:
+    int isValid(string& s) {
+        int n = s.size();
+        int count = 0;
+        string segment = "";
+
+        for (int i = 0; i <= n; ++i) {
+            if (i == n || s[i] == '.') {
+                if (segment.empty()) return 0;
+
+                // check if all characters are digits
+                for (char c : segment) {
+                    if (!isdigit(c)) return 0;
+                }
+
+                // convert to int and check range
+                int num = stoi(segment);
+                if (num < 0 || num > 255) return 0;
+
+                // check for leading zeros
+                if (segment.size() > 1 && segment[0] == '0') return 0;
+
+                count++;
+                segment = "";
+            } else {
+                segment += s[i];
+            }
         }
-        
-        // Check if the segment is numeric and within the range 0-255
-        int num;
-        try {
-            num = stoi(segment);
-        } catch (...) {
-            return false;
-        }
-        
-        if (num < 0 || num > 255) {
-            return false;
-        }
-    }
-    
-    return true;
+
+        return count == 4 ? 1 : 0;
     }
 };
-
-//{ Driver Code Starts.
-
-int main() {
-    // your code goes here
-    int t;
-    cin >> t;
-    while (t--) {
-        string s;
-        cin >> s;
-        // if (s.size() == 3) {
-        //     cout << "false" << endl;
-        //     return 0;
-        // }
-        Solution ob;
-        bool f = ob.isValid(s);
-        if (f)
-            cout << "true" << endl;
-        else
-            cout << "false" << endl;
-    }
-    return 0;
-}
-// } Driver Code Ends
